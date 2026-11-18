@@ -1,0 +1,1496 @@
+[
+ [
+  "p",
+  "Feasibility Study on Sensor Fusion for Autonomous Systems",
+  null
+ ],
+ [
+  "p",
+  "AI-Driven Camera, LiDAR, Radar and Ultrasonic Fusion for Autonomous Driving in Indian Mixed Traffic",
+  null
+ ],
+ [
+  "p",
+  "Automotive AI Innovation Internship (YuvaIntern)",
+  "Internship:"
+ ],
+ [
+  "p",
+  "Week 2: Feasibility Study on Sensor Fusion for Autonomous Systems",
+  "Task:"
+ ],
+ [
+  "p",
+  "Him Sharma",
+  "Prepared by:"
+ ],
+ [
+  "p",
+  "November 2026",
+  "Date:"
+ ],
+ [
+  "h",
+  1,
+  "1. Executive Summary"
+ ],
+ [
+  "p",
+  "An autonomous vehicle must build an accurate, real-time picture of its surroundings in every condition it is allowed to drive in. No single sensor can do this alone. Cameras capture colour and texture but struggle in darkness and glare; LiDAR measures precise 3D shape but degrades in heavy rain and dust; radar measures distance and speed in almost any weather but at low resolution; and ultrasonic sensors only cover the first few metres around the vehicle. Sensor fusion combines these inputs so that the weakness of one sensor is covered by the strength of another.",
+  null
+ ],
+ [
+  "p",
+  "This study assesses whether an AI-based fusion system using these four sensor types is feasible for autonomous driving on Indian roads, as the long-term evolution of the Saarthi Copilot platform proposed in the Week 1 roadmap. It reviews the technical background of sensor fusion, analyses ten integration challenges and maps each one to AI techniques that can reduce it. It then proposes a hybrid framework: a bird's-eye-view (BEV) mid-level fusion network for camera, LiDAR and radar; an uncertainty-aware gating module that learns how much to trust each sensor in each part of the scene; and an independent radar-and-ultrasonic safety channel for redundancy. A simulation and evaluation plan based on public datasets (nuScenes, KITTI, Waymo Open, View-of-Delft, RADIATE and IDD-3D) and the open-source CARLA simulator is set out with clear metrics and success thresholds.",
+  null
+ ],
+ [
+  "p",
+  "The study concludes that the approach is technically feasible today for Level 2+ driver assistance and for low-speed autonomy in controlled areas such as campuses, ports and industrial sites. Full autonomy on open Indian roads remains a medium- to long-term goal, limited mainly by mixed-traffic complexity, the shortage of large Indian multi-sensor datasets, cost, and the absence of a regulatory framework for driverless vehicles.",
+  null
+ ],
+ [
+  "h",
+  1,
+  "2. Introduction"
+ ],
+ [
+  "h",
+  2,
+  "2.1 Background and Motivation"
+ ],
+ [
+  "p",
+  "The Week 1 roadmap proposed Saarthi Copilot, an edge-AI device that warns drivers about fatigue, distraction and collision risk, and anticipated licensing its software stack to vehicle manufacturers. The natural next step for such a platform is to move from warning the driver to assisting, and eventually replacing, the driver in defined situations. That requires a much richer and more reliable perception system, and perception at that level depends on sensor fusion: combining data from several sensors to produce information that is more accurate, complete and dependable than any single sensor can provide.",
+  null
+ ],
+ [
+  "p",
+  "India is a particularly demanding environment for this task. Roads carry a dense mix of cars, trucks, buses, two-wheelers, auto-rickshaws, bicycles, hand carts, pedestrians and animals, often without lane discipline or clear markings. Weather ranges from intense summer glare and dust to monsoon downpours and dense winter fog in the north. A fusion system that works reliably here has to be robust by design rather than tuned for orderly roads and then patched.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "2.2 Objectives"
+ ],
+ [
+  "b",
+  [
+   "Explain the technical principles of multi-sensor fusion and the characteristics of camera, LiDAR, radar and ultrasonic sensors.",
+   "Identify the technical barriers to integrating these sensors, with attention to dynamic, mixed-traffic environments.",
+   "Evaluate AI techniques that can overcome these barriers and enable efficient real-time processing.",
+   "Propose a theoretical fusion framework and a simulation-based methodology using publicly available data.",
+   "Give an overall feasibility verdict across technical, economic, operational and regulatory dimensions."
+  ]
+ ],
+ [
+  "h",
+  2,
+  "2.3 Scope"
+ ],
+ [
+  "p",
+  "The study focuses on the perception layer of an autonomous system: detecting, locating, classifying and tracking objects and drivable space around the vehicle. Planning and vehicle control are discussed only where they depend on perception outputs. The target operational design domain (ODD) is (a) Level 2+ assisted driving on highways and urban arterial roads and (b) low-speed (below 25 km/h) autonomous operation in geofenced areas. Automation levels follow SAE J3016.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "2.4 Approach of This Study"
+ ],
+ [
+  "p",
+  "The study followed five steps: (1) a review of academic literature and public technical documentation on sensor fusion; (2) an analysis of sensor characteristics and integration challenges, with emphasis on dynamic environments; (3) the design of a fusion framework that addresses those challenges; (4) the design of a simulation and evaluation plan using open datasets and tools; and (5) a structured feasibility assessment. Supplementary diagrams and model equations are given in the appendices.",
+  null
+ ],
+ [
+  "h",
+  1,
+  "3. Technical Background on Sensor Fusion"
+ ],
+ [
+  "h",
+  2,
+  "3.1 Why Fusion Is Needed"
+ ],
+ [
+  "p",
+  "Each sensor measures a different physical property, so each fails in different ways. Fusion exploits this in three ways. Redundancy means several sensors observe the same object, so one failure does not blind the vehicle. Complementarity means each sensor contributes information the others lack, such as colour from cameras, precise depth from LiDAR and direct velocity from radar. Reduced uncertainty means that combining independent measurements produces an estimate that is more certain than any one of them.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "3.2 Sensor Modalities"
+ ],
+ [
+  "t",
+  "Characteristics of the four sensor types",
+  [
+   "Sensor",
+   "Working principle",
+   "Typical range*",
+   "Key strengths",
+   "Key weaknesses"
+  ],
+  [
+   [
+    "Camera",
+    "Passive: captures reflected visible or near-infrared light on an image sensor",
+    "Up to ~150–250 m (lens-dependent)",
+    "High resolution, colour and texture; reads signs, signals and lane markings; low cost",
+    "No direct depth; sensitive to darkness, glare, rain and dirt on the lens"
+   ],
+   [
+    "LiDAR",
+    "Active: emits laser pulses and measures their time of flight to build a 3D point cloud",
+    "~100–250 m",
+    "Accurate 3D geometry and distance; works in darkness",
+    "Higher cost; degraded by heavy rain, fog and dust; sparse at long range; weak returns from dark or wet surfaces"
+   ],
+   [
+    "Radar",
+    "Active: emits radio waves (77 GHz band) and measures echoes and Doppler shift",
+    "Up to ~250–300 m (long range)",
+    "Direct velocity measurement; robust in rain, fog, dust and darkness; low cost",
+    "Low angular resolution; noisy; ghost targets from metal structures; poor at classifying objects"
+   ],
+   [
+    "Ultrasonic",
+    "Active: emits sound pulses and measures the echo time",
+    "~0.2–5 m",
+    "Very low cost; reliable close-range detection for parking and low-speed manoeuvres",
+    "Very short range; low resolution; affected by wind, mud and temperature"
+   ]
+  ]
+ ],
+ [
+  "p",
+  "*Indicative values; actual performance depends on the specific product and conditions.",
+  null
+ ],
+ [
+  "p",
+  "Two technology shifts are changing this picture. 4D imaging radar adds elevation measurement and much higher angular resolution, producing sparse point clouds that narrow the gap with low-resolution LiDAR at a fraction of the cost. At the same time, solid-state and MEMS-based LiDAR designs are bringing LiDAR prices down sharply, which makes full multi-sensor suites increasingly practical for mass-market vehicles.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "3.3 Levels of Fusion"
+ ],
+ [
+  "p",
+  "Fusion can happen at different points in the processing chain, as shown in Figure 1. The choice of level is the most important architectural decision in a fusion system because it determines how much information is preserved and how sensitive the system is to calibration errors and sensor failures.",
+  null
+ ],
+ [
+  "img",
+  0,
+  "Early, mid and late fusion of camera and LiDAR data"
+ ],
+ [
+  "t",
+  "Comparison of fusion levels",
+  [
+   "Level",
+   "What is fused",
+   "Advantages",
+   "Disadvantages"
+  ],
+  [
+   [
+    "Early (data level)",
+    "Raw or lightly processed data, e.g. LiDAR points projected onto image pixels",
+    "Keeps all information; can capture fine cross-sensor detail",
+    "Very sensitive to calibration and timing errors; high data volume and compute"
+   ],
+   [
+    "Mid (feature level)",
+    "Learned features from each sensor, combined in a shared space such as a BEV grid",
+    "Good balance of information and robustness; trainable end to end",
+    "Needs careful design of the shared representation and large training datasets"
+   ],
+   [
+    "Late (decision level)",
+    "Object lists produced independently by each sensor's detector",
+    "Modular; easy to validate and explain; tolerant of a single sensor failure",
+    "Discards information early; one detector's errors cannot be corrected by another's raw data"
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "3.4 Classical Probabilistic Fusion"
+ ],
+ [
+  "p",
+  "Before deep learning, fusion relied on probabilistic estimation, and these methods remain central to tracking and safety systems today. The Kalman filter estimates an object's state, such as its position and velocity, by combining a motion model's prediction with each new measurement, weighted by their respective uncertainties. The extended (EKF) and unscented (UKF) Kalman filters handle non-linear sensor models, such as radar's range-and-angle measurements, while particle filters handle uncertainty with several possible outcomes. Occupancy grids divide space into cells and use Bayesian updates to estimate the probability that each cell is occupied. Data association methods, such as the Hungarian algorithm, Joint Probabilistic Data Association (JPDA) and Multiple Hypothesis Tracking (MHT), decide which measurement belongs to which tracked object.",
+  null
+ ],
+ [
+  "p",
+  "In Bayesian terms, if the sensor measurements z₁ … zₙ are conditionally independent given the true state x, the fused belief is proportional to the prior multiplied by each sensor's likelihood:",
+  null
+ ],
+ [
+  "p",
+  "p(x | z₁, …, zₙ) ∝ p(x) · ∏ᵢ p(zᵢ | x)     (1)",
+  null
+ ],
+ [
+  "p",
+  "For two independent estimates x₁ and x₂ with variances σ₁² and σ₂², the optimal fused estimate weights each one by the inverse of its variance, and the fused variance is smaller than either input:",
+  null
+ ],
+ [
+  "p",
+  "x̂ = (σ₂² x₁ + σ₁² x₂) / (σ₁² + σ₂²),     σ̂² = σ₁² σ₂² / (σ₁² + σ₂²)     (2)",
+  null
+ ],
+ [
+  "p",
+  "This principle, trust the more certain sensor more, underlies most fusion methods, including the AI-based framework proposed in Section 6.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "3.5 Deep Learning Approaches"
+ ],
+ [
+  "p",
+  "Deep learning has transformed both single-sensor perception and the way sensors are combined. Key milestones include:",
+  null
+ ],
+ [
+  "b",
+  [
+   [
+    "LiDAR networks:",
+    "VoxelNet and PointPillars convert point clouds into voxels or vertical 'pillars' that convolutional networks can process, enabling fast 3D object detection."
+   ],
+   [
+    "Projection-based fusion:",
+    "Frustum PointNets use 2D image detections to select the LiDAR points for 3D detection, and PointPainting decorates each LiDAR point with class scores from an image segmentation network."
+   ],
+   [
+    "Radar–camera fusion:",
+    "CenterFusion associates radar detections with image-based object centres to improve depth and velocity estimates."
+   ],
+   [
+    "Bird's-eye-view fusion:",
+    "Lift-Splat-Shoot and BEVFormer transform camera images into a top-down BEV representation, and BEVFusion combines camera and LiDAR features in a shared BEV grid that supports both 3D detection and map segmentation."
+   ],
+   [
+    "Transformer-based fusion:",
+    "TransFusion uses attention so that LiDAR-based object queries gather the relevant image features, which makes fusion more tolerant of calibration errors and poor image conditions."
+   ]
+  ]
+ ],
+ [
+  "p",
+  "BEV representations have become the dominant approach in both research and industry because they place all sensors in the same top-down coordinate frame that planning systems already use.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "3.6 Calibration and Synchronisation"
+ ],
+ [
+  "p",
+  "Fusion is only as good as the geometric and temporal alignment between sensors. Intrinsic calibration models each sensor's internal properties, such as a camera's focal length and lens distortion. Extrinsic calibration estimates the 3D rotation and translation between each sensor and the vehicle frame, usually with targets such as checkerboards in a workshop. Temporal synchronisation aligns measurements in time, typically through hardware triggering and a shared clock using the Precision Time Protocol (IEEE 1588). Because the vehicle moves while sensors capture data, ego-motion compensation is also required: at 72 km/h a vehicle travels 2 m in 100 ms, so an uncorrected timing error of that size would place objects metres away from their true position.",
+  null
+ ],
+ [
+  "h",
+  1,
+  "4. Challenges of Integrating Multiple Sensor Types"
+ ],
+ [
+  "p",
+  "The literature review and technical analysis identified ten challenges. Some apply to sensor fusion anywhere; others are particularly severe in Indian conditions.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.1 Calibration Drift"
+ ],
+ [
+  "p",
+  "Extrinsic calibration done at the factory does not stay fixed. Vibration, potholes, speed breakers, thermal expansion and minor collisions shift sensor mounts over time. A rotation error of just 1° moves a point 100 m away by about 1.7 m, which is enough to associate a LiDAR return with the wrong object.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.2 Temporal Misalignment and Different Sampling Rates"
+ ],
+ [
+  "p",
+  "Cameras typically run at 30 frames per second, while rotating LiDARs and radars typically run at around 10–20 Hz, and each sensor has a different processing delay. A rotating LiDAR also captures different parts of the scene at different moments within one sweep. Fast-moving objects, such as two-wheelers weaving through traffic, are therefore seen at slightly different positions by each sensor.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.3 Different Data Representations"
+ ],
+ [
+  "p",
+  "Cameras produce dense 2D pixel grids in a perspective view; LiDAR produces sparse, irregular 3D point sets; radar produces even sparser points with velocity and radar cross-section (RCS) values; and ultrasonic sensors produce single distance readings. Combining these without losing information, and in a form a neural network can learn from, is a core design problem.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.4 Degradation in Adverse Conditions"
+ ],
+ [
+  "p",
+  "Monsoon rain scatters LiDAR pulses and blurs camera images; fog and smog in north India sharply reduce visibility; dust and mud cover lenses and sensor windows; and a low sun produces glare. Radar is the most weather-robust sensor but has the lowest resolution. A fusion system must recognise when a sensor's data has become unreliable instead of simply averaging good and bad information.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.5 Conflicting Measurements and Uncertainty"
+ ],
+ [
+  "p",
+  "Sensors sometimes disagree. Radar can report ghost targets caused by reflections from metal barriers, bridges or parked vehicles; LiDAR can miss black vehicles or see false points in exhaust smoke and road spray; and cameras can be misled by shadows, posters or reflections. Deciding which sensor to trust, and how confident to be, is essential to avoid both missed obstacles and 'phantom braking'.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.6 Mixed and Unstructured Traffic"
+ ],
+ [
+  "p",
+  "Indian roads contain many small, closely spaced and fast-changing objects: two-wheelers filtering between lanes, pedestrians crossing anywhere, cattle and dogs, overloaded trucks with protruding loads, tractors, carts and auto-rickshaws. Lane markings are often missing. Most public datasets and pre-trained models come from the United States, Europe or East Asia and represent these classes poorly, so models trained on them may not transfer well.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.7 Real-Time Compute and Power Limits"
+ ],
+ [
+  "p",
+  "Six uncompressed 2-megapixel cameras at 30 frames per second alone produce roughly 1 GB of data per second, before LiDAR and radar are added. This must be processed within about 100 ms to allow safe reactions at speed, on automotive-grade hardware with limited power and cooling, in vehicles that regularly exceed 45 °C inside during Indian summers.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.8 Cost and Packaging"
+ ],
+ [
+  "p",
+  "LiDAR remains the most expensive sensor, and a full 360° suite of cameras, radars and ultrasonics plus a high-performance computer adds substantial cost to price-sensitive Indian vehicles. Sensors must also be placed to avoid blind spots while staying clean, protected and acceptable to vehicle designers.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.9 Data Scarcity and Labelling Cost"
+ ],
+ [
+  "p",
+  "Training fusion networks needs large, synchronised, multi-sensor datasets with accurate 3D labels. Labelling 3D boxes in point clouds is slow and expensive, and very few such datasets have been recorded in India. Rare but critical events, such as an animal suddenly crossing at night or a vehicle driving the wrong way, are under-represented in any dataset.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "4.10 Safety Validation and Security"
+ ],
+ [
+  "p",
+  "A fusion system must be shown to be safe under ISO 26262 (faults in hardware and software) and ISO 21448, known as SOTIF (hazards caused by performance limits even when nothing has failed). Neural networks are hard to verify formally, and the space of possible driving scenarios is effectively infinite. Sensors can also be attacked: researchers have demonstrated LiDAR spoofing and adversarial patches that fool cameras, so the fusion system should help detect inconsistent or malicious inputs.",
+  null
+ ],
+ [
+  "t",
+  "Summary of integration challenges and mitigations",
+  [
+   "#",
+   "Challenge",
+   "Impact on perception",
+   "Main AI mitigation (Section 5)"
+  ],
+  [
+   [
+    "1",
+    "Calibration drift",
+    "Objects mislocated; wrong associations",
+    "Attention-based fusion (5.2); online calibration (5.5)"
+   ],
+   [
+    "2",
+    "Temporal misalignment",
+    "Position errors for fast objects",
+    "Temporal fusion and motion compensation (5.6)"
+   ],
+   [
+    "3",
+    "Different data representations",
+    "Information loss when combining",
+    "Unified BEV representation (5.1)"
+   ],
+   [
+    "4",
+    "Adverse conditions",
+    "Missed or false detections",
+    "Uncertainty gating (5.3); robust training (5.4); radar deep learning (5.7)"
+   ],
+   [
+    "5",
+    "Conflicting measurements",
+    "Phantom braking or missed obstacles",
+    "Uncertainty-aware gating (5.3)"
+   ],
+   [
+    "6",
+    "Mixed traffic",
+    "Poor detection of local classes",
+    "Self-supervised learning and active learning (5.8); learned tracking (5.10)"
+   ],
+   [
+    "7",
+    "Compute and power",
+    "Too slow for safe reaction",
+    "Efficient edge deployment (5.9)"
+   ],
+   [
+    "8",
+    "Cost and packaging",
+    "Unaffordable sensor suites",
+    "Radar-centric models enabling cheaper tiers (5.7)"
+   ],
+   [
+    "9",
+    "Data scarcity",
+    "Models that do not generalise",
+    "Auto-labelling, domain adaptation (5.8)"
+   ],
+   [
+    "10",
+    "Safety and security",
+    "Unverifiable, attackable system",
+    "Health monitoring (5.5) and independent safety channel (6.3)"
+   ]
+  ]
+ ],
+ [
+  "h",
+  1,
+  "5. AI Techniques to Mitigate the Challenges"
+ ],
+ [
+  "h",
+  2,
+  "5.1 Unified Bird's-Eye-View Representation"
+ ],
+ [
+  "p",
+  "Converting every sensor's data into the same top-down grid solves the representation problem (4.3). For cameras, a view-transform module either predicts a depth distribution for each pixel and 'lifts' image features into 3D before flattening them onto the grid (as in Lift-Splat-Shoot), or uses attention to sample image features for each grid cell (as in BEVFormer). LiDAR points are grouped into voxels or pillars and encoded directly into the grid, and radar points with their Doppler and RCS values are encoded with a small point network. Once all features share one grid, they can be fused cell by cell, and several tasks, such as detection and drivable-area segmentation, can share the same fused features.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.2 Attention-Based Fusion"
+ ],
+ [
+  "p",
+  "Hard geometric projection breaks down when calibration drifts (4.1). Cross-attention instead lets the network learn soft correspondences: each query, such as a candidate object or a grid cell, attends to the image or point features most relevant to it within a neighbourhood, so small calibration and timing errors are absorbed rather than amplified. Deformable attention keeps this efficient by attending to a small, learned set of sampling points.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.3 Uncertainty-Aware Gating"
+ ],
+ [
+  "p",
+  "To handle degraded and conflicting sensors (4.4, 4.5), the network estimates how reliable each sensor's features are in each region of the scene. Aleatoric uncertainty (noise in the data) is predicted directly as an output, while epistemic uncertainty (what the model does not know) can be estimated with ensembles or Monte Carlo dropout. A gating module turns these estimates into a learned weight for each sensor at each grid cell, so that, for example, LiDAR features in a patch of heavy spray are down-weighted while radar features are trusted more. This is the learned equivalent of the inverse-variance rule in Equation 2.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.4 Robust Training: Sensor Dropout and Weather Augmentation"
+ ],
+ [
+  "p",
+  "During training, whole sensors are randomly removed or corrupted so that the network learns not to depend on any single input. Physics-based augmentation simulates fog, rain and low light on images and point clouds, and training includes the night and rain scenes available in public datasets. This directly targets the graceful degradation needed under adverse conditions (4.4).",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.5 Online Calibration and Sensor Health Monitoring"
+ ],
+ [
+  "p",
+  "Learning-based, target-free calibration methods estimate extrinsic parameters from natural features in the scene, such as edges, poles and lane lines, while the vehicle drives. Continuous consistency checks between sensors detect drift early (4.1), and anomaly-detection models identify blocked, dirty or faulty sensors. Small errors are corrected automatically; larger ones trigger a service alert and limit automated features (4.10).",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.6 Temporal Fusion and Motion Compensation"
+ ],
+ [
+  "p",
+  "Including precise timestamps as network inputs, warping past BEV features using the vehicle's own motion, and fusing several past frames improves velocity estimates and helps track objects that are briefly hidden. Radar's direct Doppler velocity measurements are especially valuable here for fast, erratic road users (4.2).",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.7 Radar-Centric Deep Learning"
+ ],
+ [
+  "p",
+  "Neural networks that process 4D radar point clouds, or the raw radar signal tensor, extract far more from radar than traditional signal processing. Because radar is cheap and weather-robust, a strong radar–camera model provides a lower-cost configuration for budget vehicles (4.8) and a reliable backup when cameras and LiDAR are degraded (4.4).",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.8 Self-Supervised Learning, Auto-Labelling and Active Learning"
+ ],
+ [
+  "p",
+  "Unlabelled multi-sensor driving logs can be used to pre-train encoders, for example by using LiDAR depth to supervise camera depth or by masked reconstruction tasks. Large offline models can then auto-label new data for human review, and active learning selects the most informative Indian scenes, such as dense two-wheeler traffic or animals at night, for manual labelling. Domain adaptation reduces the gap between foreign training data and Indian roads (4.6, 4.9).",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.9 Efficient Edge Deployment"
+ ],
+ [
+  "p",
+  "INT8 quantisation, pruning and knowledge distillation shrink models with little accuracy loss, while inference engines such as TensorRT and sparse convolution libraries speed up execution. Sharing one fused BEV backbone across several task heads avoids running separate networks (4.7).",
+  null
+ ],
+ [
+  "h",
+  2,
+  "5.10 Learned Tracking and Trajectory Prediction"
+ ],
+ [
+  "p",
+  "Multi-object trackers that combine Kalman filtering with learned appearance and motion features maintain stable identities in dense traffic. Prediction models based on graph neural networks or transformers estimate several possible future paths for each road user, which is important for two-wheelers and pedestrians whose behaviour on Indian roads is hard to anticipate (4.6).",
+  null
+ ],
+ [
+  "h",
+  1,
+  "6. Proposed Theoretical Framework"
+ ],
+ [
+  "h",
+  2,
+  "6.1 Design Principles"
+ ],
+ [
+  "b",
+  [
+   [
+    "Hybrid fusion:",
+    "mid-level BEV fusion for maximum accuracy, plus an independent late-fusion safety channel for redundancy and explainability."
+   ],
+   [
+    "Uncertainty-aware:",
+    "every fused output carries a confidence value, and sensor weighting adapts to conditions."
+   ],
+   [
+    "Graceful degradation:",
+    "the system keeps operating safely, at reduced capability, when one or more sensors are degraded."
+   ],
+   [
+    "Edge-deployable:",
+    "the full pipeline fits a 100 ms latency budget on automotive hardware."
+   ],
+   [
+    "Built for India:",
+    "trained, tested and tuned for mixed traffic, unmarked roads and Indian weather."
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "6.2 Proposed Sensor Suite"
+ ],
+ [
+  "t",
+  "Proposed sensor suite",
+  [
+   "Sensor",
+   "Quantity",
+   "Placement",
+   "Main purpose"
+  ],
+  [
+   [
+    "Cameras",
+    "6",
+    "Front, front-left, front-right, rear-left, rear-right, rear",
+    "360° visual coverage; classification; signs, signals and lanes"
+   ],
+   [
+    "LiDAR",
+    "1 long-range (+2 short-range optional)",
+    "Roof or windscreen top; front corners",
+    "Precise 3D geometry and distance"
+   ],
+   [
+    "4D imaging radar",
+    "5",
+    "1 front long-range; 4 corners",
+    "Velocity; long range; all-weather detection"
+   ],
+   [
+    "Ultrasonic",
+    "12",
+    "4 front, 4 rear, 2 per side",
+    "Near-field obstacles below 5 m; parking and low speed"
+   ],
+   [
+    "GNSS + IMU",
+    "1 set",
+    "Vehicle body",
+    "Ego-motion, localisation and time reference"
+   ],
+   [
+    "Compute",
+    "1 + safety MCU",
+    "Cabin or boot",
+    "AI computer for fusion; separate microcontroller for the safety channel"
+   ]
+  ]
+ ],
+ [
+  "p",
+  "This configuration mirrors the camera and radar layout of the nuScenes dataset, which allows the framework to be developed and benchmarked on public data before Indian data is collected. Figure 5 in Appendix A shows the resulting coverage around the vehicle.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "6.3 Fusion Architecture"
+ ],
+ [
+  "p",
+  "Figure 2 shows the proposed architecture. It has six stages:",
+  null
+ ],
+ [
+  "img",
+  1,
+  "Proposed Saarthi fusion architecture"
+ ],
+ [
+  "b",
+  [
+   [
+    "Stage 1, Pre-processing:",
+    "all data is timestamped against a shared PTP clock, compensated for the vehicle's own motion, corrected with the latest calibration and filtered for noise."
+   ],
+   [
+    "Stage 2, Modality encoders:",
+    "an image backbone with a view transform turns camera images into BEV features; a voxel or pillar encoder does the same for LiDAR; a point encoder handles radar points with their Doppler and RCS values."
+   ],
+   [
+    "Stage 3, Uncertainty-aware BEV fusion:",
+    "per-sensor BEV features are combined using learned weights for each sensor at each grid cell, informed by the sensor health monitor."
+   ],
+   [
+    "Stage 4, Task heads:",
+    "the fused features feed 3D object detection, BEV map segmentation (drivable area and lanes) and an occupancy grid that also captures unusual obstacles such as fallen loads."
+   ],
+   [
+    "Stage 5, Tracking and prediction:",
+    "a multi-object tracker maintains object identities over time and predicts their future trajectories."
+   ],
+   [
+    "Stage 6, Safety monitor:",
+    "an independent, rule-based late-fusion channel using radar and ultrasonic data runs on a separate microcontroller and cross-checks the main output. If they disagree about an obstacle in the vehicle's path, the safety monitor applies the cautious interpretation and can trigger a degraded mode or a minimal-risk manoeuvre."
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "6.4 Mathematical Formulation"
+ ],
+ [
+  "p",
+  "The BEV grid covers 100 m × 100 m around the vehicle at 0.5 m resolution (200 × 200 cells); objects beyond this range are handled by long-range radar and camera tracking. For each sensor m, the encoder produces a feature map Fₘ and an uncertainty map Uₘ over the grid. A small network gₘ produces a reliability score for every cell, and the weights are normalised across sensors:",
+  null
+ ],
+ [
+  "p",
+  "sₘ(h,w) = gₘ(Fₘ(h,w), Uₘ(h,w)),     wₘ(h,w) = exp(sₘ) / Σₖ exp(sₖ)     (3)",
+  null
+ ],
+ [
+  "p",
+  "F_fused = Conv( Σₘ wₘ ⊙ Fₘ )     (4)",
+  null
+ ],
+ [
+  "p",
+  "The network is trained with a combined loss, where L_det is the detection loss, L_seg the segmentation loss and L_unc a calibration loss that keeps predicted uncertainties honest. Sensor dropout with probability p is applied during training:",
+  null
+ ],
+ [
+  "p",
+  "L = L_det + α · L_seg + β · L_unc     (5)",
+  null
+ ],
+ [
+  "p",
+  "The Kalman filter equations used for tracking are listed in Appendix B.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "6.5 Degraded Modes"
+ ],
+ [
+  "t",
+  "Degraded operating modes",
+  [
+   "Situation",
+   "Detected by",
+   "System response"
+  ],
+  [
+   [
+    "Camera blinded (glare, dirt, darkness)",
+    "Image-quality monitor; low camera confidence",
+    "Rely on LiDAR and radar; reduce speed; ask the driver to take over (Level 2+)"
+   ],
+   [
+    "LiDAR degraded (heavy rain, dust)",
+    "Point density and noise monitor",
+    "Increase radar weight; lower the speed limit; increase following distance"
+   ],
+   [
+    "Radar fault",
+    "Self-diagnostics; cross-check with other sensors",
+    "Camera and LiDAR continue; disable high-speed functions"
+   ],
+   [
+    "Calibration drift",
+    "Online consistency check",
+    "Recalibrate automatically if small; otherwise limit features and alert service"
+   ],
+   [
+    "Several sensors degraded",
+    "Health monitor",
+    "Minimal-risk manoeuvre: slow down and stop safely; alert the driver"
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "6.6 Real-Time Latency Budget"
+ ],
+ [
+  "t",
+  "Latency budget per processing cycle",
+  [
+   "Pipeline stage",
+   "Target latency"
+  ],
+  [
+   [
+    "Sensor capture and data transfer",
+    "15 ms"
+   ],
+   [
+    "Pre-processing and synchronisation",
+    "10 ms"
+   ],
+   [
+    "Modality encoders",
+    "35 ms"
+   ],
+   [
+    "BEV fusion and task heads",
+    "20 ms"
+   ],
+   [
+    "Tracking and prediction",
+    "10 ms"
+   ],
+   [
+    "Safety cross-check and output",
+    "5 ms"
+   ],
+   [
+    "Total end-to-end",
+    "95 ms (below the 100 ms target)"
+   ]
+  ]
+ ],
+ [
+  "h",
+  1,
+  "7. Simulation and Evaluation Setup Using Public Data"
+ ],
+ [
+  "p",
+  "The framework can be developed and evaluated without a test vehicle by using public datasets and an open-source simulator. Figure 3 summarises the pipeline.",
+  null
+ ],
+ [
+  "img",
+  2,
+  "Simulation and evaluation pipeline"
+ ],
+ [
+  "h",
+  2,
+  "7.1 Public Datasets"
+ ],
+ [
+  "t",
+  "Public datasets for development and evaluation",
+  [
+   "Dataset",
+   "Sensors",
+   "Where recorded",
+   "Use in this study"
+  ],
+  [
+   [
+    "nuScenes",
+    "6 cameras, 1 LiDAR, 5 radars, GPS/IMU",
+    "Boston and Singapore",
+    "Main benchmark for camera–LiDAR–radar fusion, including rain and night scenes"
+   ],
+   [
+    "KITTI",
+    "Stereo cameras, 64-beam LiDAR, GPS/IMU",
+    "Karlsruhe, Germany",
+    "Classic camera–LiDAR benchmark; calibration experiments"
+   ],
+   [
+    "Waymo Open Dataset",
+    "5 cameras, 5 LiDARs",
+    "Several US cities",
+    "Large-scale training and long-range evaluation"
+   ],
+   [
+    "View-of-Delft",
+    "Camera, LiDAR, 4D radar",
+    "Delft, Netherlands",
+    "4D radar fusion; cyclists and pedestrians"
+   ],
+   [
+    "RADIATE",
+    "Radar, LiDAR, cameras",
+    "United Kingdom",
+    "Radar perception in rain, fog and snow"
+   ],
+   [
+    "IDD and IDD-3D",
+    "Cameras (IDD); cameras and LiDAR (IDD-3D)",
+    "India",
+    "Transfer to Indian unstructured traffic"
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "7.2 Simulation Environment"
+ ],
+ [
+  "p",
+  "CARLA, an open-source driving simulator, provides configurable camera, LiDAR, radar and depth sensors, control over weather and time of day, and a ScenarioRunner tool for scripted test cases. It can be co-simulated with the SUMO traffic simulator to create dense traffic. Ultrasonic sensors, which CARLA does not model natively, can be approximated with short-range ray-cast sensors. Custom scenarios will reproduce Indian conditions: dense two-wheeler traffic, pedestrians crossing mid-block, stray cattle, unmarked roads, speed breakers, monsoon rain and fog. Because simulated sensor physics are approximations, simulation results are used to compare designs and to test rare or dangerous situations, not as a substitute for real-world validation.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "7.3 Experiment Plan"
+ ],
+ [
+  "t",
+  "Planned experiments",
+  [
+   "ID",
+   "Experiment",
+   "Purpose",
+   "Data"
+  ],
+  [
+   [
+    "E1",
+    "Baseline comparison",
+    "Compare camera-only, LiDAR-only, late fusion and the proposed BEV fusion",
+    "nuScenes, Waymo"
+   ],
+   [
+    "E2",
+    "Adverse conditions",
+    "Measure performance in rain, night and fog",
+    "nuScenes rain/night scenes, RADIATE, CARLA"
+   ],
+   [
+    "E3",
+    "Sensor failure",
+    "Remove or corrupt one sensor at a time at test time",
+    "nuScenes, CARLA"
+   ],
+   [
+    "E4",
+    "Calibration robustness",
+    "Inject rotation (0.5–2°) and translation (5–20 cm) errors",
+    "KITTI, nuScenes"
+   ],
+   [
+    "E5",
+    "Indian traffic transfer",
+    "Test before and after fine-tuning on Indian data",
+    "IDD-3D, CARLA Indian scenarios"
+   ],
+   [
+    "E6",
+    "Value of 4D radar",
+    "Evaluate radar–camera fusion as a lower-cost alternative to LiDAR",
+    "View-of-Delft"
+   ],
+   [
+    "E7",
+    "Edge deployment",
+    "Measure latency, power and accuracy loss after INT8 quantisation",
+    "Jetson Orin-class development kit"
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "7.4 Evaluation Metrics"
+ ],
+ [
+  "b",
+  [
+   [
+    "mAP and NDS:",
+    "mean average precision for 3D detection, and the nuScenes Detection Score, which combines mAP with errors in position, size, orientation, velocity and attributes."
+   ],
+   [
+    "AMOTA:",
+    "average multi-object tracking accuracy across confidence thresholds."
+   ],
+   [
+    "mIoU:",
+    "mean intersection-over-union for BEV map segmentation."
+   ],
+   [
+    "Robustness ratio:",
+    "performance under a degradation divided by performance in clean conditions."
+   ],
+   [
+    "False-alarm rate:",
+    "phantom obstacles per hour of driving, critical for user trust."
+   ],
+   [
+    "Latency, throughput and power:",
+    "milliseconds per cycle, frames per second and watts on edge hardware."
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "7.5 Tools"
+ ],
+ [
+  "p",
+  "PyTorch with the MMDetection3D and OpenPCDet libraries for model development; the nuScenes and Waymo development kits for evaluation; CARLA with ScenarioRunner and SUMO for simulation; ROS 2 for integrating the pipeline; TensorRT for edge optimisation; and MLflow or Weights & Biases for experiment tracking.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "7.6 Success Criteria"
+ ],
+ [
+  "t",
+  "Success criteria",
+  [
+   "Criterion",
+   "Threshold for 'feasible'"
+  ],
+  [
+   [
+    "Detection accuracy (nuScenes validation set)",
+    "NDS within 5% of published state-of-the-art camera–LiDAR fusion"
+   ],
+   [
+    "Gain over the best single sensor",
+    "At least 10% relative improvement in NDS"
+   ],
+   [
+    "Single-sensor failure",
+    "Robustness ratio of at least 0.80"
+   ],
+   [
+    "Rain and night",
+    "Robustness ratio of at least 0.75"
+   ],
+   [
+    "Calibration error of 1° and 10 cm",
+    "Performance drop of no more than 10%"
+   ],
+   [
+    "Indian data after fine-tuning",
+    "mAP no more than 15% below nuScenes results"
+   ],
+   [
+    "Latency on edge hardware",
+    "At most 100 ms end to end, at 10 Hz or faster"
+   ]
+  ]
+ ],
+ [
+  "h",
+  1,
+  "8. Feasibility Assessment"
+ ],
+ [
+  "h",
+  2,
+  "8.1 Technical Feasibility"
+ ],
+ [
+  "p",
+  "The core techniques are mature. BEV fusion, attention-based fusion and uncertainty estimation are well established in research, and BEV-based perception has been adopted in production driver-assistance systems by several manufacturers. Edge hardware capable of running such models in real time is commercially available. The main technical gaps are robustness in extreme weather, transfer to Indian mixed traffic, and validation of rare scenarios. Overall, the core fusion technology can be judged at an advanced readiness level, while its adaptation to Indian conditions is at an early, laboratory-validation stage.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "8.2 Economic Feasibility"
+ ],
+ [
+  "p",
+  "Cameras and ultrasonic sensors are inexpensive and radar is moderately priced; LiDAR has fallen from tens of thousands of dollars per unit a decade ago to a few hundred dollars for some automotive units, but it remains the largest single sensor cost. A tiered product approach keeps the platform affordable:",
+  null
+ ],
+ [
+  "t",
+  "Tiered sensor configurations",
+  [
+   "Configuration",
+   "Sensors",
+   "Target use",
+   "Relative cost"
+  ],
+  [
+   [
+    "Tier A: Vision–radar",
+    "6 cameras, 5 radars, 12 ultrasonic",
+    "Level 2+ assisted driving",
+    "Low"
+   ],
+   [
+    "Tier B: + forward LiDAR",
+    "Tier A + 1 long-range LiDAR",
+    "Advanced highway assistance; future Level 3",
+    "Medium"
+   ],
+   [
+    "Tier C: Full 360° suite",
+    "Tier B + 2 short-range LiDARs, redundant compute",
+    "Geofenced low-speed autonomy (shuttles, ports, campuses)",
+    "High"
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "8.3 Operational Feasibility"
+ ],
+ [
+  "p",
+  "Operating a fusion-equipped fleet requires calibration equipment and trained technicians at service centres, sensor cleaning systems (washer jets and heaters), over-the-air software updates and a data pipeline for continuous model improvement. These are achievable but add to the cost of ownership, and the service network must be built up before large-scale deployment.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "8.4 Regulatory and Safety Feasibility"
+ ],
+ [
+  "p",
+  "Development must follow ISO 26262 and ISO 21448, and connected functions must meet UN Regulations No. 155 and No. 156 on cyber security and software updates. Internationally, UN Regulation No. 157 sets out approval requirements for Automated Lane Keeping Systems, the first Level 3 function. Indian regulations do not yet provide a framework for approving driverless vehicles on public roads, so near-term deployment should target driver-assistance functions and operation within private, geofenced sites.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "8.5 Feasibility Scorecard"
+ ],
+ [
+  "t",
+  "Feasibility scorecard",
+  [
+   "Dimension",
+   "Rating",
+   "Summary"
+  ],
+  [
+   [
+    "Technical",
+    "High (Level 2+, geofenced) / Medium (open-road autonomy)",
+    "Proven techniques; gaps in weather robustness and Indian traffic"
+   ],
+   [
+    "Economic",
+    "Medium",
+    "Tiered configurations; LiDAR cost falling"
+   ],
+   [
+    "Operational",
+    "Medium",
+    "Needs calibration and service infrastructure"
+   ],
+   [
+    "Data availability",
+    "Low–Medium",
+    "Few Indian multi-sensor datasets; can be addressed with collection and auto-labelling"
+   ],
+   [
+    "Regulatory",
+    "Low–Medium",
+    "Clear path for assistance features; none yet for driverless operation in India"
+   ],
+   [
+    "Overall",
+    "Feasible with a staged approach",
+    "Start with Level 2+ and geofenced autonomy; expand as data and regulation mature"
+   ]
+  ]
+ ],
+ [
+  "h",
+  2,
+  "8.6 Recommendation and Next Steps"
+ ],
+ [
+  "t",
+  "Recommended staged plan",
+  [
+   "Stage",
+   "Timeframe",
+   "Activities"
+  ],
+  [
+   [
+    "1. Research prototype",
+    "Months 0–12",
+    "Build and benchmark the framework on public datasets and CARLA; run experiments E1–E7"
+   ],
+   [
+    "2. Indian data and pilot",
+    "Months 12–24",
+    "Equip a test vehicle; collect and label Indian multi-sensor data; deploy Tier A for Level 2+; geofenced Tier C pilot"
+   ],
+   [
+    "3. Scale-up",
+    "Months 24–48",
+    "Advanced highway features and broader geofenced autonomy, subject to regulatory approval"
+   ]
+  ]
+ ],
+ [
+  "h",
+  1,
+  "9. Risks and Limitations of This Study"
+ ],
+ [
+  "b",
+  [
+   "This is a desk-based study: performance targets are based on published research and engineering judgement, not on new experiments.",
+   "Simulation cannot fully reproduce real sensor physics, especially for radar and ultrasonic sensors, so simulated results must be confirmed on real data.",
+   "Public datasets are mostly foreign; results on them may overestimate performance on Indian roads.",
+   "Sensor prices and regulations are changing quickly, so the economic and regulatory assessments should be reviewed regularly."
+  ]
+ ],
+ [
+  "h",
+  1,
+  "10. Conclusion"
+ ],
+ [
+  "p",
+  "Sensor fusion is the foundation of safe autonomous driving because no single sensor can see reliably in every condition. This study has shown that combining cameras, LiDAR, radar and ultrasonic sensors through a bird's-eye-view, uncertainty-aware fusion network, backed by an independent safety channel, addresses the ten main integration challenges identified, from calibration drift and timing errors to adverse weather and India's mixed traffic. A complete development and evaluation plan can be carried out with public datasets and open-source tools before any vehicle is equipped. The approach is feasible now for Level 2+ assistance and geofenced low-speed autonomy, while full autonomy on open Indian roads depends on building Indian multi-sensor datasets, further cost reduction and a clear regulatory framework. For the Saarthi platform, the recommended path is to start with the vision–radar tier and expand towards LiDAR-based autonomy as these conditions mature.",
+  null
+ ],
+ [
+  "h",
+  1,
+  "References"
+ ],
+ [
+  "p",
+  "[1]  SAE International (2021). J3016: Taxonomy and Definitions for Terms Related to Driving Automation Systems for On-Road Motor Vehicles.",
+  null
+ ],
+ [
+  "p",
+  "[2]  Yeong, D. J., Velasco-Hernandez, G., Barry, J. and Walsh, J. (2021). Sensor and sensor fusion technology in autonomous vehicles: A review. Sensors, 21(6), 2140.",
+  null
+ ],
+ [
+  "p",
+  "[3]  Feng, D. et al. (2021). Deep multi-modal object detection and semantic segmentation for autonomous driving: Datasets, methods, and challenges. IEEE Transactions on Intelligent Transportation Systems.",
+  null
+ ],
+ [
+  "p",
+  "[4]  Kalman, R. E. (1960). A new approach to linear filtering and prediction problems. Journal of Basic Engineering, 82(1), 35–45.",
+  null
+ ],
+ [
+  "p",
+  "[5]  Zhou, Y. and Tuzel, O. (2018). VoxelNet: End-to-end learning for point cloud based 3D object detection. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[6]  Lang, A. H., Vora, S., Caesar, H., Zhou, L., Yang, J. and Beijbom, O. (2019). PointPillars: Fast encoders for object detection from point clouds. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[7]  Qi, C. R., Liu, W., Wu, C., Su, H. and Guibas, L. J. (2018). Frustum PointNets for 3D object detection from RGB-D data. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[8]  Vora, S., Lang, A. H., Helou, B. and Beijbom, O. (2020). PointPainting: Sequential fusion for 3D object detection. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[9]  Nabati, R. and Qi, H. (2021). CenterFusion: Center-based radar and camera fusion for 3D object detection. WACV.",
+  null
+ ],
+ [
+  "p",
+  "[10]  Philion, J. and Fidler, S. (2020). Lift, Splat, Shoot: Encoding images from arbitrary camera rigs by implicitly unprojecting to 3D. ECCV.",
+  null
+ ],
+ [
+  "p",
+  "[11]  Li, Z. et al. (2022). BEVFormer: Learning bird's-eye-view representation from multi-camera images via spatiotemporal transformers. ECCV.",
+  null
+ ],
+ [
+  "p",
+  "[12]  Liu, Z., Tang, H., Amini, A., Yang, X., Mao, H., Rus, D. and Han, S. (2023). BEVFusion: Multi-task multi-sensor fusion with unified bird's-eye view representation. ICRA.",
+  null
+ ],
+ [
+  "p",
+  "[13]  Bai, X. et al. (2022). TransFusion: Robust LiDAR-camera fusion for 3D object detection with transformers. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[14]  Caesar, H. et al. (2020). nuScenes: A multimodal dataset for autonomous driving. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[15]  Geiger, A., Lenz, P. and Urtasun, R. (2012). Are we ready for autonomous driving? The KITTI vision benchmark suite. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[16]  Sun, P. et al. (2020). Scalability in perception for autonomous driving: Waymo Open Dataset. CVPR.",
+  null
+ ],
+ [
+  "p",
+  "[17]  Palffy, A., Pool, E., Baratam, S., Kooij, J. F. P. and Gavrila, D. M. (2022). Multi-class road user detection with 3+1D radar in the View-of-Delft dataset. IEEE Robotics and Automation Letters.",
+  null
+ ],
+ [
+  "p",
+  "[18]  Sheeny, M. et al. (2021). RADIATE: A radar dataset for automotive perception in bad weather. ICRA.",
+  null
+ ],
+ [
+  "p",
+  "[19]  Varma, G., Subramanian, A., Namboodiri, A., Chandraker, M. and Jawahar, C. V. (2019). IDD: A dataset for exploring problems of autonomous navigation in unconstrained environments. WACV.",
+  null
+ ],
+ [
+  "p",
+  "[20]  Dokania, S. et al. (2023). IDD-3D: Indian Driving Dataset for 3D unstructured road scenes. WACV.",
+  null
+ ],
+ [
+  "p",
+  "[21]  Dosovitskiy, A., Ros, G., Codevilla, F., López, A. and Koltun, V. (2017). CARLA: An open urban driving simulator. Conference on Robot Learning (CoRL).",
+  null
+ ],
+ [
+  "p",
+  "[22]  IEEE (2019). IEEE 1588-2019: Standard for a Precision Clock Synchronization Protocol for Networked Measurement and Control Systems.",
+  null
+ ],
+ [
+  "p",
+  "[23]  ISO 26262:2018. Road vehicles – Functional safety. ISO 21448:2022. Road vehicles – Safety of the intended functionality.",
+  null
+ ],
+ [
+  "p",
+  "[24]  UNECE (2021). UN Regulations No. 155 (Cyber security), No. 156 (Software update) and No. 157 (Automated Lane Keeping Systems).",
+  null
+ ],
+ [
+  "h",
+  1,
+  "Appendix A: Supplementary Diagrams"
+ ],
+ [
+  "p",
+  "Figure 4 shows the real-time processing cycle, including the two decision points where sensor health and agreement with the safety channel are checked. Figure 5 shows the coverage provided by the proposed sensor suite.",
+  null
+ ],
+ [
+  "img",
+  3,
+  "Real-time processing cycle (flowchart)"
+ ],
+ [
+  "img",
+  4,
+  "Coverage of the proposed sensor suite (schematic)"
+ ],
+ [
+  "h",
+  1,
+  "Appendix B: Model Equations"
+ ],
+ [
+  "h",
+  2,
+  "B.1 Kalman Filter for Object Tracking"
+ ],
+ [
+  "p",
+  "Each tracked object has a state vector x containing its position, velocity, size and heading. With state transition matrix F, process noise covariance Q, measurement matrix H and measurement noise covariance R, each cycle performs a prediction and an update:",
+  null
+ ],
+ [
+  "p",
+  "Predict:   x̂ₖ|ₖ₋₁ = F x̂ₖ₋₁,     Pₖ|ₖ₋₁ = F Pₖ₋₁ Fᵀ + Q     (B1)",
+  null
+ ],
+ [
+  "p",
+  "Gain:   Kₖ = Pₖ|ₖ₋₁ Hᵀ (H Pₖ|ₖ₋₁ Hᵀ + R)⁻¹     (B2)",
+  null
+ ],
+ [
+  "p",
+  "Update:   x̂ₖ = x̂ₖ|ₖ₋₁ + Kₖ (zₖ − H x̂ₖ|ₖ₋₁),     Pₖ = (I − Kₖ H) Pₖ|ₖ₋₁     (B3)",
+  null
+ ],
+ [
+  "p",
+  "Measurements from different sensors use different H and R matrices: radar contributes precise radial velocity, LiDAR precise position, and cameras class and heading, so the filter naturally weights each sensor by its accuracy for each quantity.",
+  null
+ ],
+ [
+  "h",
+  2,
+  "B.2 Robustness Ratio"
+ ],
+ [
+  "p",
+  "Robustness ratio = Metric(degraded condition) / Metric(clean condition)     (B4)",
+  null
+ ],
+ [
+  "h",
+  1,
+  "Appendix C: Glossary"
+ ],
+ [
+  "t",
+  "Glossary of terms",
+  [
+   "Term",
+   "Meaning"
+  ],
+  [
+   [
+    "ADAS",
+    "Advanced driver assistance systems"
+   ],
+   [
+    "BEV",
+    "Bird's-eye view: a top-down grid representation of the area around the vehicle"
+   ],
+   [
+    "Doppler",
+    "Change in radar frequency caused by a target's motion, used to measure its speed"
+   ],
+   [
+    "Extrinsic calibration",
+    "The position and orientation of a sensor relative to the vehicle"
+   ],
+   [
+    "NDS",
+    "nuScenes Detection Score, a combined 3D detection metric"
+   ],
+   [
+    "ODD",
+    "Operational design domain: the conditions in which an automated system is designed to work"
+   ],
+   [
+    "PTP",
+    "Precision Time Protocol (IEEE 1588) for synchronising clocks across devices"
+   ],
+   [
+    "RCS",
+    "Radar cross-section: how strongly an object reflects radar signals"
+   ],
+   [
+    "SOTIF",
+    "Safety of the intended functionality (ISO 21448)"
+   ],
+   [
+    "TOPS",
+    "Trillions of operations per second, a measure of AI processor speed"
+   ]
+  ]
+ ]
+]

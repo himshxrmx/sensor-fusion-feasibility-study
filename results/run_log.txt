@@ -1,0 +1,140 @@
+condition               clear day  night  heavy rain  dense fog  camera blinded
+config                                                                         
+Camera only                  81.4   66.2        74.9       39.9             8.5
+Radar only                   93.0   93.0        91.5       92.9            93.0
+LiDAR only                   89.5   89.5        77.6       35.6            89.5
+Camera + radar               95.5   93.3        93.2       92.3            92.2
+Camera + radar + LiDAR       96.7   96.3        93.6       92.6            96.0
+condition               clear day  night  heavy rain  dense fog  camera blinded
+config                                                                         
+Camera only                  0.72   1.63        0.92       2.36            6.81
+Radar only                   0.35   0.35        0.39       0.35            0.35
+LiDAR only                   0.14   0.14        0.24       0.50            0.14
+Camera + radar               0.21   0.29        0.28       0.38            0.40
+Camera + radar + LiDAR       0.19   0.27        0.39       0.39            0.29
+condition               clear day  night  heavy rain  dense fog  camera blinded
+config                                                                         
+Camera only                 109.0   62.0        85.0       39.0            36.0
+Radar only                  148.0  148.0       146.0      148.0           148.0
+LiDAR only                  128.0  128.0        83.0       34.0           128.0
+Camera + radar              147.0  147.0       145.0      147.0           147.0
+Camera + radar + LiDAR      147.0  147.0       146.0      147.0           147.0
+{
+ "time_sync": [
+  {
+   "scenario": "S4 stalled truck at 80 km/h",
+   "delay_ms": 0,
+   "camera_only_rmse": 1.412,
+   "fused_rmse": 0.528
+  },
+  {
+   "scenario": "S4 stalled truck at 80 km/h",
+   "delay_ms": 20,
+   "camera_only_rmse": 1.566,
+   "fused_rmse": 0.531
+  },
+  {
+   "scenario": "S4 stalled truck at 80 km/h",
+   "delay_ms": 50,
+   "camera_only_rmse": 1.955,
+   "fused_rmse": 0.531
+  },
+  {
+   "scenario": "S4 stalled truck at 80 km/h",
+   "delay_ms": 100,
+   "camera_only_rmse": 2.861,
+   "fused_rmse": 0.539
+  },
+  {
+   "scenario": "S4 stalled truck at 80 km/h",
+   "delay_ms": 150,
+   "camera_only_rmse": 4.366,
+   "fused_rmse": 0.545
+  },
+  {
+   "scenario": "S1 car cut-in",
+   "delay_ms": 0,
+   "camera_only_rmse": 0.649,
+   "fused_rmse": 0.127
+  },
+  {
+   "scenario": "S1 car cut-in",
+   "delay_ms": 20,
+   "camera_only_rmse": 0.658,
+   "fused_rmse": 0.127
+  },
+  {
+   "scenario": "S1 car cut-in",
+   "delay_ms": 50,
+   "camera_only_rmse": 0.671,
+   "fused_rmse": 0.133
+  },
+  {
+   "scenario": "S1 car cut-in",
+   "delay_ms": 100,
+   "camera_only_rmse": 0.793,
+   "fused_rmse": 0.148
+  },
+  {
+   "scenario": "S1 car cut-in",
+   "delay_ms": 150,
+   "camera_only_rmse": 0.873,
+   "fused_rmse": 0.16
+  }
+ ],
+ "calibration": [
+  {
+   "bias_deg": 0,
+   "lateral_offset_at_50m_m": 0.0,
+   "radar_only_rmse": 0.17,
+   "fused_night_rmse": 0.099,
+   "fused_night_rmse_with_online_correction": 0.102
+  },
+  {
+   "bias_deg": 0.5,
+   "lateral_offset_at_50m_m": 0.44,
+   "radar_only_rmse": 0.229,
+   "fused_night_rmse": 0.102,
+   "fused_night_rmse_with_online_correction": 0.102
+  },
+  {
+   "bias_deg": 1.0,
+   "lateral_offset_at_50m_m": 0.87,
+   "radar_only_rmse": 0.329,
+   "fused_night_rmse": 0.122,
+   "fused_night_rmse_with_online_correction": 0.103
+  },
+  {
+   "bias_deg": 2.0,
+   "lateral_offset_at_50m_m": 1.75,
+   "radar_only_rmse": 0.562,
+   "fused_night_rmse": 0.384,
+   "fused_night_rmse_with_online_correction": 0.343
+  },
+  {
+   "bias_deg": 3.0,
+   "lateral_offset_at_50m_m": 2.62,
+   "radar_only_rmse": 0.807,
+   "fused_night_rmse": 1.155,
+   "fused_night_rmse_with_online_correction": 0.807
+  }
+ ],
+ "tracker_compute_us": {
+  "single_update_python_numpy": 74.3,
+  "100_tracks_one_radar_scan_vectorised": 212.0
+ },
+ "worked_example_30m": {
+  "camera_sigma_range_m": 1.1,
+  "camera_sigma_lateral_m": 0.052,
+  "radar_sigma_range_m": 0.15,
+  "radar_sigma_lateral_m": 0.524,
+  "fused_sigma_range_m": 0.149,
+  "fused_sigma_lateral_m": 0.052
+ },
+ "stopping_distance_80kmh_m": {
+  "dry (0.7 g), 1.0 s reaction": 58.1,
+  "wet (0.45 g), 1.0 s reaction": 78.0,
+  "AEB only (0.8 g), 0.3 s system delay": 38.1
+ },
+ "runtime_s": 37.1
+}

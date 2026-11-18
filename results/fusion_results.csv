@@ -1,0 +1,101 @@
+scenario,condition,config,pos_rmse,vel_rmse,pos_err_median,pos_err_p95,good_track_pct,tracked_pct,nees_median,first_confirmed_range_m,never_confirmed_pct,track_drops_per_run
+S1 car cut-in,clear day,Camera only,0.649,1.681,0.168,1.22,89.568,97.481,2.904,25.043,0.0,0.86
+S1 car cut-in,clear day,Radar only,0.17,0.58,0.083,0.357,97.488,97.494,2.83,24.941,0.0,0.0
+S1 car cut-in,clear day,LiDAR only,0.298,0.459,0.037,0.653,92.58,95.599,1.715,24.641,0.0,0.165
+S1 car cut-in,clear day,Camera + radar,0.127,0.386,0.03,0.35,98.753,98.765,2.596,25.142,0.0,0.0
+S1 car cut-in,clear day,Camera + radar + LiDAR,0.291,0.467,0.019,0.35,98.66,98.765,2.39,25.235,0.0,0.005
+S1 car cut-in,night,Camera only,0.704,1.797,0.219,1.238,89.716,97.444,2.698,25.043,0.0,0.43
+S1 car cut-in,night,Radar only,0.17,0.58,0.083,0.357,97.488,97.494,2.83,24.941,0.0,0.0
+S1 car cut-in,night,LiDAR only,0.298,0.459,0.037,0.653,92.58,95.599,1.715,24.641,0.0,0.165
+S1 car cut-in,night,Camera + radar,0.099,0.419,0.033,0.204,98.667,98.728,2.531,25.142,0.0,0.0
+S1 car cut-in,night,Camera + radar + LiDAR,0.102,0.423,0.021,0.243,98.698,98.765,2.302,25.235,0.0,0.0
+S1 car cut-in,heavy rain,Camera only,0.67,1.707,0.195,1.217,89.728,97.401,2.801,25.043,0.0,0.595
+S1 car cut-in,heavy rain,Radar only,0.189,0.612,0.093,0.394,97.377,97.444,2.956,24.941,0.0,0.0
+S1 car cut-in,heavy rain,LiDAR only,0.199,0.425,0.064,0.225,93.827,94.704,1.731,24.344,0.0,0.065
+S1 car cut-in,heavy rain,Camera + radar,0.126,0.434,0.035,0.32,98.636,98.728,2.636,25.142,0.0,0.0
+S1 car cut-in,heavy rain,Camera + radar + LiDAR,0.116,0.408,0.027,0.266,98.611,98.759,2.493,25.235,0.0,0.0
+S1 car cut-in,dense fog,Camera only,0.816,2.036,0.295,1.51,85.272,96.833,2.967,24.845,0.0,0.35
+S1 car cut-in,dense fog,Radar only,0.17,0.58,0.083,0.358,97.488,97.494,2.84,24.941,0.0,0.0
+S1 car cut-in,dense fog,LiDAR only,0.391,0.55,0.109,0.496,88.198,90.309,2.054,23.75,0.0,0.135
+S1 car cut-in,dense fog,Camera + radar,0.271,0.568,0.038,0.219,98.395,98.58,2.645,25.089,0.0,0.005
+S1 car cut-in,dense fog,Camera + radar + LiDAR,0.308,0.6,0.034,0.18,98.488,98.679,2.538,25.142,0.0,0.005
+S1 car cut-in,camera blinded,Camera only,4.43,3.997,1.638,8.554,18.759,58.994,16.612,20.808,0.5,1.19
+S1 car cut-in,camera blinded,Radar only,0.17,0.58,0.083,0.357,97.488,97.494,2.83,24.941,0.0,0.0
+S1 car cut-in,camera blinded,LiDAR only,0.298,0.459,0.037,0.653,92.58,95.599,1.715,24.641,0.0,0.165
+S1 car cut-in,camera blinded,Camera + radar,0.306,0.643,0.071,0.39,97.586,97.698,3.944,24.941,0.0,0.005
+S1 car cut-in,camera blinded,Camera + radar + LiDAR,0.31,0.569,0.027,0.421,98.469,98.593,2.809,25.089,0.0,0.005
+S2 pedestrian crossing,clear day,Camera only,0.454,2.785,0.189,0.996,91.241,96.0,2.267,34.598,0.0,0.0
+S2 pedestrian crossing,clear day,Radar only,0.248,0.832,0.111,0.536,91.672,92.138,2.328,33.655,0.0,0.0
+S2 pedestrian crossing,clear day,LiDAR only,0.048,0.16,0.034,0.088,89.328,89.328,1.441,33.085,0.0,0.0
+S2 pedestrian crossing,clear day,Camera + radar,0.102,0.686,0.035,0.116,96.259,96.5,2.158,34.971,0.0,0.0
+S2 pedestrian crossing,clear day,Camera + radar + LiDAR,0.068,0.476,0.019,0.057,96.345,96.552,1.887,35.322,0.0,0.0
+S2 pedestrian crossing,night,Camera only,2.625,3.865,0.333,1.882,71.172,83.672,2.644,30.87,0.0,0.015
+S2 pedestrian crossing,night,Radar only,0.248,0.832,0.111,0.536,91.672,92.138,2.328,33.655,0.0,0.0
+S2 pedestrian crossing,night,LiDAR only,0.048,0.16,0.034,0.088,89.328,89.328,1.441,33.085,0.0,0.0
+S2 pedestrian crossing,night,Camera + radar,0.123,0.659,0.041,0.193,92.707,92.914,2.256,33.655,0.0,0.0
+S2 pedestrian crossing,night,Camera + radar + LiDAR,0.557,0.736,0.022,0.098,94.69,95.069,1.965,34.774,0.0,0.005
+S2 pedestrian crossing,heavy rain,Camera only,0.604,2.939,0.254,1.323,85.862,94.517,2.469,34.226,0.0,0.0
+S2 pedestrian crossing,heavy rain,Radar only,0.272,0.851,0.123,0.606,89.638,90.224,2.473,33.096,0.0,0.0
+S2 pedestrian crossing,heavy rain,LiDAR only,0.094,0.252,0.06,0.176,79.259,79.259,1.6,29.729,0.0,0.03
+S2 pedestrian crossing,heavy rain,Camera + radar,0.246,0.871,0.044,0.271,93.69,95.828,2.339,34.774,0.0,0.0
+S2 pedestrian crossing,heavy rain,Camera + radar + LiDAR,0.691,1.237,0.03,0.269,93.828,96.155,2.258,34.971,0.0,0.005
+S2 pedestrian crossing,dense fog,Camera only,3.97,5.614,0.461,2.452,37.207,47.638,3.125,19.312,0.5,0.005
+S2 pedestrian crossing,dense fog,Radar only,0.251,0.836,0.111,0.539,91.655,92.155,2.345,33.655,0.0,0.0
+S2 pedestrian crossing,dense fog,LiDAR only,0.369,0.547,0.099,0.403,21.552,21.966,2.061,12.954,12.0,0.0
+S2 pedestrian crossing,dense fog,Camera + radar,0.22,0.744,0.06,0.504,91.724,92.017,2.88,33.655,0.0,0.0
+S2 pedestrian crossing,dense fog,Camera + radar + LiDAR,0.224,0.766,0.059,0.49,91.793,92.19,2.883,33.655,0.0,0.0
+S2 pedestrian crossing,camera blinded,Camera only,6.772,7.037,2.072,14.498,6.345,23.034,11.837,15.026,32.0,0.055
+S2 pedestrian crossing,camera blinded,Radar only,0.248,0.832,0.111,0.536,91.672,92.138,2.328,33.655,0.0,0.0
+S2 pedestrian crossing,camera blinded,LiDAR only,0.048,0.16,0.034,0.088,89.328,89.328,1.441,33.085,0.0,0.0
+S2 pedestrian crossing,camera blinded,Camera + radar,0.227,0.737,0.102,0.493,91.931,92.207,3.724,33.655,0.0,0.0
+S2 pedestrian crossing,camera blinded,Camera + radar + LiDAR,0.396,0.608,0.025,0.121,94.155,94.638,1.94,34.214,0.0,0.005
+S3 motorbike weaving,clear day,Camera only,0.367,1.412,0.192,0.714,96.708,98.856,3.362,39.865,0.0,0.0
+S3 motorbike weaving,clear day,Radar only,0.332,0.849,0.243,0.622,97.772,97.99,5.545,39.796,0.0,0.0
+S3 motorbike weaving,clear day,LiDAR only,0.073,0.335,0.057,0.131,96.936,96.936,1.988,39.595,0.0,0.0
+S3 motorbike weaving,clear day,Camera + radar,0.064,0.335,0.045,0.096,98.955,99.01,4.076,39.931,0.0,0.0
+S3 motorbike weaving,clear day,Camera + radar + LiDAR,0.051,0.306,0.033,0.077,98.955,99.01,3.866,39.994,0.0,0.0
+S3 motorbike weaving,night,Camera only,1.418,2.147,0.318,1.399,88.168,97.406,4.081,39.666,0.0,0.005
+S3 motorbike weaving,night,Radar only,0.332,0.849,0.243,0.622,97.772,97.99,5.545,39.796,0.0,0.0
+S3 motorbike weaving,night,LiDAR only,0.073,0.335,0.057,0.131,96.936,96.936,1.988,39.595,0.0,0.0
+S3 motorbike weaving,night,Camera + radar,0.289,0.625,0.063,0.159,98.589,98.772,4.847,39.896,0.0,0.005
+S3 motorbike weaving,night,Camera + radar + LiDAR,0.075,0.487,0.045,0.112,98.871,98.955,4.381,39.931,0.0,0.0
+S3 motorbike weaving,heavy rain,Camera only,0.483,1.544,0.255,0.959,94.124,98.609,3.704,39.865,0.0,0.0
+S3 motorbike weaving,heavy rain,Radar only,0.373,0.903,0.271,0.697,97.465,97.95,5.884,39.796,0.0,0.0
+S3 motorbike weaving,heavy rain,LiDAR only,0.168,0.481,0.104,0.263,95.856,95.985,2.352,39.397,0.0,0.015
+S3 motorbike weaving,heavy rain,Camera + radar,0.091,0.433,0.056,0.125,98.837,98.98,4.515,39.931,0.0,0.0
+S3 motorbike weaving,heavy rain,Camera + radar + LiDAR,0.102,0.417,0.048,0.112,98.708,99.005,4.465,39.994,0.0,0.0
+S3 motorbike weaving,dense fog,Camera only,1.873,2.62,0.585,3.449,33.515,47.995,5.594,29.777,0.0,0.115
+S3 motorbike weaving,dense fog,Radar only,0.333,0.85,0.243,0.623,97.767,97.99,5.561,39.796,0.0,0.0
+S3 motorbike weaving,dense fog,LiDAR only,0.796,0.912,0.198,1.754,28.446,31.545,3.387,26.847,0.5,0.36
+S3 motorbike weaving,dense fog,Camera + radar,0.319,0.767,0.15,0.682,97.688,98.02,7.548,39.796,0.0,0.0
+S3 motorbike weaving,dense fog,Camera + radar + LiDAR,0.325,0.769,0.146,0.697,97.52,98.03,7.72,39.796,0.0,0.0
+S3 motorbike weaving,camera blinded,Camera only,6.825,5.656,2.843,13.552,8.599,46.653,16.886,32.937,0.5,1.315
+S3 motorbike weaving,camera blinded,Radar only,0.332,0.849,0.243,0.622,97.772,97.99,5.545,39.796,0.0,0.0
+S3 motorbike weaving,camera blinded,LiDAR only,0.073,0.335,0.057,0.131,96.936,96.936,1.988,39.595,0.0,0.0
+S3 motorbike weaving,camera blinded,Camera + radar,0.36,0.827,0.251,0.697,97.772,98.064,9.795,39.796,0.0,0.0
+S3 motorbike weaving,camera blinded,Camera + radar + LiDAR,0.101,0.451,0.063,0.16,98.723,98.802,4.989,39.896,0.0,0.0
+S4 stalled truck at 80 km/h,clear day,Camera only,1.412,4.241,0.524,2.967,48.134,64.955,2.795,108.539,0.0,0.005
+S4 stalled truck at 80 km/h,clear day,Radar only,0.654,0.981,0.301,1.4,84.902,96.107,2.688,147.736,0.0,0.0
+S4 stalled truck at 80 km/h,clear day,LiDAR only,0.124,0.268,0.055,0.246,79.286,79.339,1.669,127.734,0.0,0.0
+S4 stalled truck at 80 km/h,clear day,Camera + radar,0.528,0.948,0.063,1.284,88.098,96.009,2.755,146.626,0.0,0.0
+S4 stalled truck at 80 km/h,clear day,Camera + radar + LiDAR,0.354,0.802,0.038,0.73,93.009,96.098,2.239,146.626,0.0,0.0
+S4 stalled truck at 80 km/h,night,Camera only,1.768,6.423,0.869,3.796,15.705,27.982,3.398,61.92,0.0,0.0
+S4 stalled truck at 80 km/h,night,Radar only,0.654,0.981,0.301,1.4,84.902,96.107,2.688,147.736,0.0,0.0
+S4 stalled truck at 80 km/h,night,LiDAR only,0.124,0.268,0.055,0.246,79.286,79.339,1.669,127.734,0.0,0.0
+S4 stalled truck at 80 km/h,night,Camera + radar,0.661,1.019,0.25,1.443,83.393,96.054,4.008,146.626,0.0,0.0
+S4 stalled truck at 80 km/h,night,Camera + radar + LiDAR,0.357,0.804,0.053,0.755,92.795,96.098,2.271,146.626,0.0,0.0
+S4 stalled truck at 80 km/h,heavy rain,Camera only,1.915,5.853,0.687,3.695,29.848,46.446,3.352,84.859,0.0,0.005
+S4 stalled truck at 80 km/h,heavy rain,Radar only,0.734,0.999,0.336,1.582,81.5,94.589,2.778,145.516,0.0,0.0
+S4 stalled truck at 80 km/h,heavy rain,LiDAR only,0.492,0.594,0.101,0.498,41.366,42.152,2.093,83.335,0.0,0.12
+S4 stalled truck at 80 km/h,heavy rain,Camera + radar,0.674,1.074,0.119,1.545,81.518,94.366,3.896,144.799,0.0,0.0
+S4 stalled truck at 80 km/h,heavy rain,Camera + radar + LiDAR,0.648,1.02,0.105,1.494,83.098,94.643,3.562,145.516,0.0,0.0
+S4 stalled truck at 80 km/h,dense fog,Camera only,2.764,11.076,1.492,5.114,3.438,9.304,4.237,38.981,1.0,0.0
+S4 stalled truck at 80 km/h,dense fog,Radar only,0.659,0.983,0.301,1.406,84.804,96.107,2.688,147.736,0.0,0.0
+S4 stalled truck at 80 km/h,dense fog,LiDAR only,0.448,1.093,0.233,0.712,4.036,4.152,3.405,34.497,31.5,0.0
+S4 stalled truck at 80 km/h,dense fog,Camera + radar,0.708,1.046,0.367,1.497,81.554,96.062,4.755,146.626,0.0,0.0
+S4 stalled truck at 80 km/h,dense fog,Camera + radar + LiDAR,0.686,0.995,0.361,1.45,82.661,96.134,4.699,146.626,0.0,0.0
+S4 stalled truck at 80 km/h,camera blinded,Camera only,9.215,15.964,3.692,17.075,0.42,3.196,8.586,36.021,57.5,0.0
+S4 stalled truck at 80 km/h,camera blinded,Radar only,0.654,0.981,0.301,1.4,84.902,96.107,2.688,147.736,0.0,0.0
+S4 stalled truck at 80 km/h,camera blinded,LiDAR only,0.124,0.268,0.055,0.246,79.286,79.339,1.669,127.734,0.0,0.0
+S4 stalled truck at 80 km/h,camera blinded,Camera + radar,0.713,1.047,0.384,1.509,81.357,96.134,5.878,146.626,0.0,0.0
+S4 stalled truck at 80 km/h,camera blinded,Camera + radar + LiDAR,0.366,0.832,0.058,0.79,92.536,96.152,2.339,146.626,0.0,0.0

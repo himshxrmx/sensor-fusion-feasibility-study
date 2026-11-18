@@ -1,0 +1,271 @@
+{
+  "runs_per_cell": 200,
+  "cells": 100,
+  "total_runs": 20000,
+  "seed": 2026,
+  "mean_pos_rmse_m": {
+    "clear day": {
+      "Camera only": 0.72,
+      "Radar only": 0.351,
+      "LiDAR only": 0.136,
+      "Camera + radar": 0.205,
+      "Camera + radar + LiDAR": 0.191
+    },
+    "night": {
+      "Camera only": 1.629,
+      "Radar only": 0.351,
+      "LiDAR only": 0.136,
+      "Camera + radar": 0.293,
+      "Camera + radar + LiDAR": 0.273
+    },
+    "heavy rain": {
+      "Camera only": 0.918,
+      "Radar only": 0.392,
+      "LiDAR only": 0.238,
+      "Camera + radar": 0.284,
+      "Camera + radar + LiDAR": 0.389
+    },
+    "dense fog": {
+      "Camera only": 2.356,
+      "Radar only": 0.353,
+      "LiDAR only": 0.501,
+      "Camera + radar": 0.38,
+      "Camera + radar + LiDAR": 0.386
+    },
+    "camera blinded": {
+      "Camera only": 6.81,
+      "Radar only": 0.351,
+      "LiDAR only": 0.136,
+      "Camera + radar": 0.401,
+      "Camera + radar + LiDAR": 0.293
+    }
+  },
+  "mean_good_track_pct": {
+    "clear day": {
+      "Camera only": 81.4,
+      "Radar only": 93.0,
+      "LiDAR only": 89.5,
+      "Camera + radar": 95.5,
+      "Camera + radar + LiDAR": 96.7
+    },
+    "night": {
+      "Camera only": 66.2,
+      "Radar only": 93.0,
+      "LiDAR only": 89.5,
+      "Camera + radar": 93.3,
+      "Camera + radar + LiDAR": 96.3
+    },
+    "heavy rain": {
+      "Camera only": 74.9,
+      "Radar only": 91.5,
+      "LiDAR only": 77.6,
+      "Camera + radar": 93.2,
+      "Camera + radar + LiDAR": 93.6
+    },
+    "dense fog": {
+      "Camera only": 39.9,
+      "Radar only": 92.9,
+      "LiDAR only": 35.6,
+      "Camera + radar": 92.3,
+      "Camera + radar + LiDAR": 92.6
+    },
+    "camera blinded": {
+      "Camera only": 8.5,
+      "Radar only": 93.0,
+      "LiDAR only": 89.5,
+      "Camera + radar": 92.2,
+      "Camera + radar + LiDAR": 96.0
+    }
+  },
+  "robustness_ratio_good_track": {
+    "clear day": {
+      "Camera only": 1.0,
+      "Radar only": 1.0,
+      "LiDAR only": 1.0,
+      "Camera + radar": 1.0,
+      "Camera + radar + LiDAR": 1.0
+    },
+    "night": {
+      "Camera only": 0.813,
+      "Radar only": 1.0,
+      "LiDAR only": 1.0,
+      "Camera + radar": 0.977,
+      "Camera + radar + LiDAR": 0.995
+    },
+    "heavy rain": {
+      "Camera only": 0.92,
+      "Radar only": 0.984,
+      "LiDAR only": 0.866,
+      "Camera + radar": 0.975,
+      "Camera + radar + LiDAR": 0.967
+    },
+    "dense fog": {
+      "Camera only": 0.49,
+      "Radar only": 1.0,
+      "LiDAR only": 0.397,
+      "Camera + radar": 0.967,
+      "Camera + radar + LiDAR": 0.957
+    },
+    "camera blinded": {
+      "Camera only": 0.105,
+      "Radar only": 1.0,
+      "LiDAR only": 1.0,
+      "Camera + radar": 0.965,
+      "Camera + radar + LiDAR": 0.992
+    }
+  },
+  "truck_first_confirmed_range_m": {
+    "clear day": {
+      "Camera only": 108.5,
+      "Radar only": 147.7,
+      "LiDAR only": 127.7,
+      "Camera + radar": 146.6,
+      "Camera + radar + LiDAR": 146.6
+    },
+    "night": {
+      "Camera only": 61.9,
+      "Radar only": 147.7,
+      "LiDAR only": 127.7,
+      "Camera + radar": 146.6,
+      "Camera + radar + LiDAR": 146.6
+    },
+    "heavy rain": {
+      "Camera only": 84.9,
+      "Radar only": 145.5,
+      "LiDAR only": 83.3,
+      "Camera + radar": 144.8,
+      "Camera + radar + LiDAR": 145.5
+    },
+    "dense fog": {
+      "Camera only": 39.0,
+      "Radar only": 147.7,
+      "LiDAR only": 34.5,
+      "Camera + radar": 146.6,
+      "Camera + radar + LiDAR": 146.6
+    },
+    "camera blinded": {
+      "Camera only": 36.0,
+      "Radar only": 147.7,
+      "LiDAR only": 127.7,
+      "Camera + radar": 146.6,
+      "Camera + radar + LiDAR": 146.6
+    }
+  },
+  "stopping_distance_80kmh_m": {
+    "dry (0.7 g), 1.0 s reaction": 58.1,
+    "wet (0.45 g), 1.0 s reaction": 78.0,
+    "AEB only (0.8 g), 0.3 s system delay": 38.1
+  },
+  "time_sync": [
+    {
+      "scenario": "S4 stalled truck at 80 km/h",
+      "delay_ms": 0,
+      "camera_only_rmse": 1.412,
+      "fused_rmse": 0.528
+    },
+    {
+      "scenario": "S4 stalled truck at 80 km/h",
+      "delay_ms": 20,
+      "camera_only_rmse": 1.566,
+      "fused_rmse": 0.531
+    },
+    {
+      "scenario": "S4 stalled truck at 80 km/h",
+      "delay_ms": 50,
+      "camera_only_rmse": 1.955,
+      "fused_rmse": 0.531
+    },
+    {
+      "scenario": "S4 stalled truck at 80 km/h",
+      "delay_ms": 100,
+      "camera_only_rmse": 2.861,
+      "fused_rmse": 0.539
+    },
+    {
+      "scenario": "S4 stalled truck at 80 km/h",
+      "delay_ms": 150,
+      "camera_only_rmse": 4.366,
+      "fused_rmse": 0.545
+    },
+    {
+      "scenario": "S1 car cut-in",
+      "delay_ms": 0,
+      "camera_only_rmse": 0.649,
+      "fused_rmse": 0.127
+    },
+    {
+      "scenario": "S1 car cut-in",
+      "delay_ms": 20,
+      "camera_only_rmse": 0.658,
+      "fused_rmse": 0.127
+    },
+    {
+      "scenario": "S1 car cut-in",
+      "delay_ms": 50,
+      "camera_only_rmse": 0.671,
+      "fused_rmse": 0.133
+    },
+    {
+      "scenario": "S1 car cut-in",
+      "delay_ms": 100,
+      "camera_only_rmse": 0.793,
+      "fused_rmse": 0.148
+    },
+    {
+      "scenario": "S1 car cut-in",
+      "delay_ms": 150,
+      "camera_only_rmse": 0.873,
+      "fused_rmse": 0.16
+    }
+  ],
+  "calibration": [
+    {
+      "bias_deg": 0,
+      "lateral_offset_at_50m_m": 0.0,
+      "radar_only_rmse": 0.17,
+      "fused_night_rmse": 0.099,
+      "fused_night_rmse_with_online_correction": 0.102
+    },
+    {
+      "bias_deg": 0.5,
+      "lateral_offset_at_50m_m": 0.44,
+      "radar_only_rmse": 0.229,
+      "fused_night_rmse": 0.102,
+      "fused_night_rmse_with_online_correction": 0.102
+    },
+    {
+      "bias_deg": 1.0,
+      "lateral_offset_at_50m_m": 0.87,
+      "radar_only_rmse": 0.329,
+      "fused_night_rmse": 0.122,
+      "fused_night_rmse_with_online_correction": 0.103
+    },
+    {
+      "bias_deg": 2.0,
+      "lateral_offset_at_50m_m": 1.75,
+      "radar_only_rmse": 0.562,
+      "fused_night_rmse": 0.384,
+      "fused_night_rmse_with_online_correction": 0.343
+    },
+    {
+      "bias_deg": 3.0,
+      "lateral_offset_at_50m_m": 2.62,
+      "radar_only_rmse": 0.807,
+      "fused_night_rmse": 1.155,
+      "fused_night_rmse_with_online_correction": 0.807
+    }
+  ],
+  "tracker_compute_us": {
+    "single_update_python_numpy": 74.3,
+    "100_tracks_one_radar_scan_vectorised": 212.0
+  },
+  "runtime_s": 37.1,
+  "worked_example_30m": {
+    "camera_sigma_range_m": 1.1,
+    "camera_sigma_lateral_m": 0.052,
+    "radar_sigma_range_m": 0.15,
+    "radar_sigma_lateral_m": 0.524,
+    "fused_sigma_range_m": 0.149,
+    "fused_sigma_lateral_m": 0.052
+  }
+}

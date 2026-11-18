@@ -2,68 +2,67 @@
 
 **Week 2 task, Automotive AI Innovation Internship (YuvaIntern)**
 
-A feasibility study of an AI-based sensor fusion system that combines **cameras, LiDAR, radar and ultrasonic sensors** for autonomous driving in Indian mixed traffic. It builds on the Saarthi Copilot platform from the [Week 1 roadmap](https://github.com/himshxrmx/automotive-ai-strategic-roadmap).
+A feasibility study of AI-based fusion of **cameras, radar, LiDAR and ultrasonic sensors** for automated driving on Indian roads, building on the Saarthi Copilot platform from the [Week 1 roadmap](https://github.com/himshxrmx/automotive-ai-strategic-roadmap). Besides the literature review, it includes a **Monte Carlo tracking experiment (20,000 simulated runs)** that measures how each sensor combination behaves at night, in heavy rain, in dense fog and when the camera is blinded.
 
 📄 **Full report:** [Week2_Sensor_Fusion_Feasibility_Study.docx](Week2_Sensor_Fusion_Feasibility_Study.docx)
 
-## Verdict
+## Key results
 
-| Use case | Feasibility |
-|---|---|
-| Level 2+ assisted driving | ✅ Feasible now |
-| Low-speed autonomy in geofenced areas (campuses, ports, industrial sites) | ✅ Feasible now |
-| Full autonomy on open Indian roads | ⏳ Medium to long term (data, cost and regulation) |
+Share of time the target is tracked within 1 m (mean of four scenarios: car cut-in, pedestrian crossing, weaving motorbike, stalled truck at 80 km/h):
 
-## Why fusion?
+| Configuration | Clear day | Night | Heavy rain | Dense fog | Camera blinded |
+|---|---|---|---|---|---|
+| Camera only | 81.4% | 66.2% | 74.9% | 39.9% | 8.5% |
+| Radar only | 93.0% | 93.0% | 91.5% | 92.9% | 93.0% |
+| LiDAR only | 89.5% | 89.5% | 77.6% | 35.6% | 89.5% |
+| Camera + radar | 95.5% | 93.3% | 93.2% | 92.3% | 92.2% |
+| **Camera + radar + LiDAR** | **96.7%** | **96.3%** | **93.6%** | **92.6%** | **96.0%** |
 
-| Sensor | Best at | Weak at |
+- **Stalled truck at 80 km/h:** stopping distance is 58 m (dry) / 78 m (wet). A camera alone confirms the truck at only 39 m in fog; every configuration with radar confirms it at about 147 m.
+- **Worked example at 30 m:** camera ±1.1 m range / ±0.05 m lateral, radar ±0.15 m / ±0.52 m, fused **±0.15 m / ±0.05 m**.
+- **Calibration:** 1° radar misalignment = 0.87 m sideways at 50 m. Fusion absorbs up to 1° with online correction; at 3° camera and radar fight and accuracy drops, so the system must flag recalibration.
+- **Timing:** a 100 ms camera timestamp error doubles camera-only error on the truck, but camera + radar fusion barely changes.
+
+![Good-track time by condition](figures/fig6_good_track_by_condition.png)
+![Truck detection range vs stopping distance](figures/fig9_truck_detection_range.png)
+
+## Feasibility scorecard
+
+Nine weighted criteria, each scored 1–5 against fixed anchors (full table in Section 9.5 of the report):
+
+| Target | Weighted score | Decision |
 |---|---|---|
-| Camera | Colour, texture, signs, lanes | Darkness, glare, no direct depth |
-| LiDAR | Precise 3D shape and distance | Heavy rain, fog, dust; cost |
-| Radar | Speed and range in any weather | Low resolution, ghost targets |
-| Ultrasonic | Cheap close-range detection | Only ~5 m range |
+| Level 2+ assistance and geofenced low-speed autonomy | 3.85 / 5 | ✅ GO |
+| Open-road driverless operation in India | 2.55 / 5 (data and regulation scored 1) | ⛔ NO-GO for now |
 
-## Fusion levels
-
-![Early, mid and late fusion](images/fig1_fusion_levels.png)
+Indicative sensor + compute cost per vehicle: Tier A (camera + radar + ultrasonic) ₹1.06 lakh, Tier B (+ forward LiDAR) ₹1.73 lakh, Tier C (full 360° suite) ₹2.83 lakh.
 
 ## Proposed architecture
 
-A **bird's-eye-view (BEV) mid-level fusion** network with **uncertainty-aware gating** (a learned weight for each sensor in each grid cell), plus an **independent radar and ultrasonic safety channel** for redundancy.
+Bird's-eye-view (BEV) mid-level fusion with uncertainty-aware gating, plus an independent radar and ultrasonic safety channel.
 
 ![Proposed architecture](images/fig2_architecture.png)
 
-The full pipeline is budgeted at **95 ms** per cycle, below the 100 ms target.
-
-## Ten integration challenges
-
-Calibration drift · temporal misalignment · different data formats · adverse weather · conflicting measurements · Indian mixed traffic · compute and power limits · cost · data scarcity · safety validation and security. Each is mapped to an AI mitigation in Section 5 of the report.
-
-## Simulation and evaluation plan
-
-![Simulation pipeline](images/fig3_simulation_pipeline.png)
-
-- **Datasets:** nuScenes, KITTI, Waymo Open, View-of-Delft (4D radar), RADIATE (bad weather), IDD-3D (India)
-- **Simulator:** CARLA with custom Indian traffic scenarios, co-simulated with SUMO
-- **Experiments E1–E7:** baselines, adverse weather, sensor failure, calibration errors, Indian traffic transfer, 4D radar value, edge latency
-- **Metrics:** NDS, mAP, AMOTA, mIoU, robustness ratio, false-alarm rate, latency
-
-## Supplementary diagrams
-
-| Processing flowchart | Sensor coverage |
-|---|---|
-| ![Flowchart](images/fig4_processing_flowchart.png) | ![Coverage](images/fig5_sensor_coverage.png) |
-
-## Repository contents
+## Repository
 
 ```
-.
-├── README.md
-├── Week2_Sensor_Fusion_Feasibility_Study.docx   # the full report
-└── images/
-    ├── fig1_fusion_levels.png
-    ├── fig2_architecture.png
-    ├── fig3_simulation_pipeline.png
-    ├── fig4_processing_flowchart.png
-    └── fig5_sensor_coverage.png
+src/fusion_sim.py       Monte Carlo simulation: sensor models, scenarios, EKF tracker, experiments
+src/build_report.py     builds the Word report from the results
+src/doclib.py           small python-docx helper
+content/base_text.json  reusable text sections of the report
+results/                fusion_results.csv (100 cells), experiments.json
+figures/ images/        charts and diagrams used in the report
 ```
+
+## Reproduce
+
+```bash
+pip install numpy pandas matplotlib python-docx
+python src/fusion_sim.py      # about 40 s
+python src/build_report.py
+```
+
+The sensor models are typical datasheet-level assumptions, and the simulation tests fusion logic rather than a trained neural detector; Section 8.9 of the report lists what it does and does not show.
+
+---
+Him Sharma · Automotive AI Innovation Internship (YuvaIntern) · November 2026
